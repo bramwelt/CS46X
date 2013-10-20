@@ -2,14 +2,15 @@ CS 461/462/463
 ==============
 Client Requirements Document Outline
 
-Project Name: PGP for the web
-Team Name: [Everyone gets an A]? [(P)retty (G)ood (P)roject]?
-Team Members: 
+:Project: PGP for the web
+:Team Name: [Everyone gets an A]? [(P)retty (G)ood (P)roject]?
+
+:Team Members: 
  * Daniel Reichert [email]
- * Trevor Bramwell [email]
+ * Trevor Bramwell <bramwelt@onid.orst.edu>
  * Geoffery Corey [email]
 
-Client:
+:Client:
  * Sean McGregor, Privly Foundation. [phone] [email]
 
 Introduction to the problem
