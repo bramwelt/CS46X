@@ -1,0 +1,10 @@
+msc {
+    a[ label = "Client" ], b[ label = "Application" ], c[ label =
+    "Server"];
+
+    a box c [label="Delete Message"];
+    a=>>b [label="Message ID"];
+    b=>>c [label="Delete Request"];
+    c=>>b [label="Request Result"];
+    b=>>a [label="Request Result"];
+}

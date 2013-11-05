@@ -1,0 +1,9 @@
+msc {
+    a[ label = "Client" ], b[ label = "Application" ], c[ label =
+    "Server"];
+
+    a box c [label="View Message"];
+    a=>>c [label="Link"];
+    c=>>b [label="Encrypted Content"];
+    b=>>a [label="Plaintext Content"];
+}
