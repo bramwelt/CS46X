@@ -1,0 +1,24 @@
+Key management tasks:
+* Key generation
+  Key revocation
+* key inspection
+    looking at meta data on other keys
+* Key import from identity providers 
+  
+  (* denotes local on the extension)
+
+Identity Types:
+  Email
+  Social network: (Have Friends/ACL's built in)
+    Facebook
+    G+
+    Diaspora
+    Twitter
+    
+Can ask social networks about identity to see if there is consensus
+  
+Does not depend on them implementing our system, nor does it make them an
+authoritative identity provider since there is a layer above them.
+
+Next thursday:
+  How to derive consesus around identity
