@@ -1,0 +1,16 @@
+Problems that exist, we may be able solve all of them or some of them
+  * finding a user's key in the wild
+  * verify that the key is pretty authentic 
+    * by wot
+    * by first experience
+  * sharing the key to a single person
+  * publish the key to a public audience
+  * anchoring/associating keys with existing identity systems
+  * instances when you would sign a key
+  
+  * maintaining agnosticism
+ 
+
+Homework:
+  Mozilla Persona, looks it up
+    
