@@ -20,9 +20,9 @@ Persona, even one with a specific domain that isn''t an IdP itself.
 
 There are three distinct steps in the protocol:
 
-1  User Certificate Provisioning 
-2  Assertion Generation 
-3  Assertion Verification
+1.  User Certificate Provisioning 
+2.  Assertion Generation 
+3.  Assertion Verification
 
 As a prerequisite, the user should have an active identity (email address) that
 they wish to use when logging in to websites. The protocol does not require
@@ -56,11 +56,11 @@ this step is complete and the browser continues with the assertion generation
 step below. If the browser does not have a fresh certificate, it attempts to
 obtain one from the domain associated with the chosen identity.
 
-1  The browser fetches the /.well-known/browserid support document over SSL
+1.  The browser fetches the /.well-known/browserid support document over SSL
 from the identity''s domain.  
-2  Using information from the support document, the browser passes the user''s email address and associated public key to the IdP and requests a signed certificate.
-3  If necessary, the user is asked to sign into the IdP before provisioning proceeds. 
-4  The IdP creates, signs, and gives auser certificate to the user''s browser.
+2.  Using information from the support document, the browser passes the user''s email address and associated public key to the IdP and requests a signed certificate.
+3.  If necessary, the user is asked to sign into the IdP before provisioning proceeds. 
+4.  The IdP creates, signs, and gives auser certificate to the user''s browser.
 
 With the certificate in hand, the browser can continue with generating an
 identity assertion and signing into an RP.
