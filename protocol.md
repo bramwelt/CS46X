@@ -1,11 +1,12 @@
-Persona is built on the BrowserID protocol. This page describes the BrowserID
-protocol at a high level.
+The Privly PGP app is built on top of Mozilla Persona. This page describes the 
+BrowserID protocol at a high level.
 
 #Actors
 
 The protocol involves three actors:
 
-*  Users: The actual people that want to sign into websites using Persona.
+*  Users: The actual people that want to discover public keys of message
+recipients with the help of Persona.
 *  Relying Parties (RPs): Websites that want to let users sign in using Persona.
 *  Identity Providers (IdPs): Domains that can issue Persona-compatible identity
 certificates to their users.
@@ -58,7 +59,8 @@ obtain one from the domain associated with the chosen identity.
 
 1.  The browser fetches the /.well-known/browserid support document over SSL
 from the identity''s domain.  
-2.  Using information from the support document, the browser passes the user''s email address and associated public key to the IdP and requests a signed certificate.
+2.  Using information from the support document, the browser passes the user''s 
+email address and associated public key to the IdP and requests a signed certificate.
 3.  If necessary, the user is asked to sign into the IdP before provisioning proceeds. 
 4.  The IdP creates, signs, and gives auser certificate to the user''s browser.
 
