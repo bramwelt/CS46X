@@ -141,7 +141,7 @@ User uploading an e-mail/public key to the directory after generating a new
 keypair.  In this use case the browser extension is function as the "user"
 actor.
 
-This use case invovles the following steps:
+This use case involves the following steps:
 
 1.    Generation of the user certificate from the browser extension.
 1.    Send the certificate to the IdP.
@@ -154,13 +154,13 @@ User wants to find the public key of a given e-mail address.  In this use case,
 the browser extension is functioning as the "RP" actor.
 
 1.    User queries the DP for a specific e-mail address.
-1.    Directory provider returns the user certficate and identity assertion.
+1.    Directory provider returns the user certificate and identity assertion.
 1.    The browser extension verifies the assertion.
 
 
 ### Caveat
 Because we are unaware of any verifier libraries that can run in the context of
-a browser extesion, initially we will not be doing verification from the
+a browser extension, initially we will not be doing verification from the
 browser extension. The first version of our implementation will make use of a
 remote verifier.  Eventually we would like to remove the remote verifier from
 the threat model so that we are not required to trust a remote resource. 
@@ -170,7 +170,7 @@ browser extension.
 The initial implementation of use case 2 will look more like:
 
 1.    User queries the DP for a specific e-mail address.
-1.    Directory provider returns the user certficate and identity assertion.
+1.    Directory provider returns the user certificate and identity assertion.
 1.    The browser extension sends the assertion to the remote verifier over ssl/tls.
 1.    The remote verifier evaluates the assertion and responds to the client.
 
