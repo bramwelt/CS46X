@@ -15,8 +15,9 @@ The protocol involves four actors:
           message recipients.
 *  Identity Providers (IdPs): Domains that can issue Persona-compatible 
            identity certificates to their users.
-*  Directory Provider (DP): A key-value store that provides storage for an 
-          authenticated directory of email addresses and public keys.
+*  Directory Provider (DP): A key-value store that provides storage for a
+          directory of email addresses and public keys in the form of user
+          certificates and identity assertions.
 
 Persona and the BrowserID protocol use email addresses as identities, so it's
 natural for email providers to become IdPs.
@@ -101,24 +102,24 @@ to the directory for verification.
 The combination of user certificate and identity assertion is sufficient to
 confirm a user's identity.
 
-First, the DP checks the domain and expiration time in the assertion. If the
+First, the RP checks the domain and expiration time in the assertion. If the
 assertion is expired or intended for a different domain, it's rejected. This
 prevents malicious re-use of assertions.
 
-Second, the DP validates the signature on the assertion with the public key
-inside the user certificate. If the key and signature match, the DP is assured
+Second, the RP validates the signature on the assertion with the public key
+inside the user certificate. If the key and signature match, the RP is assured
 that the current user really does possess the key associated with the
 certificate.
 
-Last, the DP fetches the IdP's public key from its /.well-known/browserid
+Last, the RP fetches the IdP's public key from its /.well-known/browserid
 document and verifies that it matches the signature on the user certificate. If
-it does, then the DP can be certain that the certificate really was issued by
+it does, then the RP can be certain that the certificate really was issued by
 the domain in question.
 
-Once verifying that this is a current directory entry request for the proper DP, 
-that the user certificate matches the current user, and that the user
-certificate is legitimate, the DP is done and can permit the user certificate as 
-a valid entry in the directory.
+Once verifying that this is a non-expired directory entry for the proper 
+directory, that the user certificate matches the intended user, and that the
+user certificate is legitimate, the RP is done and can permit the use of the
+public key as one that is authentically tied to the email address queried.
 
 #The Persona Fallback IdP
 
@@ -129,7 +130,49 @@ user's identity on behalf of the unsupported domain. After demonstrating
 ownership of the address, the user would then receive a certificate issued by
 the fallback IdP, login.persona.org, rather than the identity's domain.
 
-DPs follow a similar process when validating the assertion: the DP would
+RPs follow a similar process when validating the assertion: the RP would
 ultimately request the fallback IdP's public key in order to verify the
 certificate.
+
+
+# Use case overview
+## Use case 1: 
+User uploading an e-mail/public key to the directory after generating a new
+keypair.  In this use case the browser extension is function as the "user"
+actor.
+
+This use case invovles the following steps:
+
+1.    Generation of the user certificate from the browser extension.
+1.    Send the certificate to the IdP.
+1.    IdP creates an identity assertion.
+1.    Returns the identity assertion to the user.
+1.    User uploads the identity assertion and user certificate to the DP.
+
+## Use case 2: 
+User wants to find the public key of a given e-mail address.  In this use case,
+the browser extension is functioning as the "RP" actor.
+
+1.    User queries the DP for a specific e-mail address.
+1.    Directory provider returns the user certficate and identity assertion.
+1.    The browser extension verifies the assertion.
+
+
+### Caveat
+Because we are unaware of any verifier libraries that can run in the context of
+a browser extesion, initially we will not be doing verification from the
+browser extension. The first version of our implementation will make use of a
+remote verifier.  Eventually we would like to remove the remote verifier from
+the threat model so that we are not required to trust a remote resource. 
+Long term, this means developing a verifier that can run in the context of a 
+browser extension.
+
+The initial implementation of use case 2 will look more like:
+
+1.    User queries the DP for a specific e-mail address.
+1.    Directory provider returns the user certficate and identity assertion.
+1.    The browser extension sends the assertion to the remote verifier over ssl/tls.
+1.    The remote verifier evaluates the assertion and responds to the client.
+
+
 
