@@ -1,15 +1,26 @@
-This document was copied and modified from the original found at:
-https://developer.mozilla.org/en-US/Persona/Protocol_Overview
+# Outline and Purpose
 
-The Privly PGP app is built on top of Mozilla Persona. This page describes how
+The Privly PGP app is built on top of Mozilla Persona for key sharing. This page describes how
 the Privly PGP app uses Persona for identity certificates and public key
 discovery at a high level.
 
-#Actors
+Mozilla's Persona allows users to log into supporting websites using identities
+signed by whomever controls an email's domain. Anyone with a domain can
+choose to sign identities, and those who don't allow Mozilla to act as a 
+fallback identity provider on the domain.
+
+Here we build on top of the Persona protocol such that we can
+use existing Persona identity servers to add trust to user public
+keys for content cryptography.
+
+This document was copied and modified from the original found at:
+https://developer.mozilla.org/en-US/Persona/Protocol_Overview
+
+# Actors
 
 The protocol involves four actors:
 
-*  Users: The actual people that want to upload their email address associated
+*  Users: The people that want to upload their email address associated
           with a public key to a public directory.
 *  Relying Parties (RPs): Users that want to discover public keys of potential
           message recipients.
@@ -50,17 +61,17 @@ Because Persona uses standard public key cryptography techniques, the user
 certificate is signed by the IdP's private key and contains:
 
 *  The user's email address.  
-*  The user's public key for that address on that browser.  
+*  The user's Persona public key for that address on that browser.  
 *  The time that the certificate was issued.  
 *  The time that the certificate expires.  
 *  The IdP's domain name.
 *  The user's public key they wish to publicly associate with their email.
 
-The user's browser generates a different keypair for each of the user's email
+The user's browser generates a different Persona keypair for each of the user's email
 addresses, and these keypairs are not shared across browsers. Thus, a user must
 obtain a fresh certificate whenever one expires, or whenever using a new
-browser or computer. Certificates should not expire before the public key that is
-publicly associated with their email expires.
+browser or computer. Certificates should not expire before the Persona public key that is
+publicly associated with their email expires (TODO: this is confusing, I am not sure what you are saying).
 
 When the public key that is publicly associated with an email expires or a user
 wants to generate a new one pair, it attempts to obtain one from the domain
@@ -95,9 +106,12 @@ signs a new document called an "identity assertion." It contains:
 after it was created.
 
 The browser then presents both the user certificate and the identity assertion
-to the directory for verification.  
+to the DP.  
 
 ##Assertion Verification
+
+When a RP needs a key for a particular email address, it queries the DP and
+receives all the currently non-expired assertions for the email.
 
 The combination of user certificate and identity assertion is sufficient to
 confirm a user's identity.
