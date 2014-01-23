@@ -17,9 +17,9 @@
 
 
 ## Interface with IdP (2 Weeks)
-#. Change payload to IdP
-#. Generate Assertion
-#. Verify Assertion
+1. Change payload to IdP
+2. Generate Assertion
+3. Verify Assertion
 
 ## Tools:
 * persona client side library (persona.js)
