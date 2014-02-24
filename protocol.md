@@ -5,13 +5,13 @@ page describes how the Privly PGP app uses Persona for identity certificates
 and public key discovery at a high level.
 
 Mozilla's Persona allows users to log into supporting websites using identities
-signed by whomever controls an email's domain. Anyone with a domain can choose
+signed by an email domain provider. Anyone with a domain can choose
 to sign identities, and those who don't allow Mozilla to act as a fallback
 identity provider on the domain.
 
 Here we build on top of the Persona protocol such that we can use existing
-Persona identity servers to add trust to user public keys for content
-cryptography.
+Persona identity servers to verify an email address, associate it with a
+PGP key, and enable secure sharing of content.
 
 This document was copied and modified from the original found at:
 https://developer.mozilla.org/en-US/Persona/Protocol_Overview
@@ -20,15 +20,14 @@ https://developer.mozilla.org/en-US/Persona/Protocol_Overview
 
 The protocol involves four actors:
 
-*  Users: The people that want to upload their email address associated
-          with a public key to a public directory.
-*  Relying Parties (RPs): Users that want to discover public keys of potential
-          message recipients.
+*  Users: People that want to upload their PGP public key and associated
+        identity to a public directory.
+*  Relying Parties (RPs): A content server that hosts encrypted content
+        indended for recipients.
 *  Identity Providers (IdPs): Domains that can issue Persona-compatible 
            identity certificates to their users.
-*  Directory Provider (DP): A key-value store that provides storage for a
-          directory of email addresses and public keys in the form of user
-          certificates and identity assertions.
+*  Directory Provider (DP): A key-value store for holding associations
+           between identities and PGP public keys.
 
 Persona and the BrowserID protocol use email addresses as identities, so it's
 natural for email providers to become IdPs.
@@ -45,43 +44,41 @@ There are three distinct steps in the protocol:
 3.  Assertion Verification
 
 As a prerequisite, the user should have an identity (email address) that they
-wish to publicly disclose and associate with a public key. The protocol does
-not require that IdP-backed identities are SMTP-routable, but it does require
-that identities follow the user@domain format.  
+wish to publicly disclose and associate with a PGP public key. The
+protocol does not require that IdP-backed identities are SMTP-routable,
+but it does require that identities follow the user@domain format.  
 
 ##User Certificate Provisioning
 
-In order to upload their email and public key to the directory, a user must be
-able to prove ownership of their preferred email address. The foundation of
-this proof is a cryptographically signed certificate from an IdP certifying the
-connection between a browser's user and a given identity within the IdP's
-domain.
+In order to upload their identity and public key to the directory, a
+user must be able to prove ownership of their preferred email address.
+The foundation of this proof is a cryptographically signed certificate
+from an IdP certifying the connection between a browser's user and a
+given identity within the IdP's domain.
 
 Because Persona uses standard public key cryptography techniques, the user
 certificate is signed by the IdP's private key and contains:
 
 *  The user's email address.  
-*  The user's Persona public key for that address on that browser.  
 *  The time that the certificate was issued.  
 *  The time that the certificate expires.  
 *  The IdP's domain name.
-*  The user's Privly public key they wish to publicly associate with their email.
+*  The user's Persona public key.
 
 The user's browser generates a different Persona keypair for each of the user's
 email addresses, and these keypairs are not shared across browsers.  Thus, a
 user must obtain a fresh certificate whenever one expires, or whenever using a
-new browser or computer. The Persona public key should not expire before the
-Privly public key.
+new browser or computer. 
 
-When the Privly public key expires or a user generates a new one, the extension
-attempts to obtain a new user certificate from the domain associated with the
-chosen identity.
+When the Persona public key expires or a user generates a new one, the
+extension attempts to obtain a new user certificate from the domain
+associated with the chosen identity.
 
 1.  The browser extension fetches the /.well-known/browserid support document
     over SSL from the identity's domain.
 2.  Using information from the support document, the browser extension passes
-    the user's email address and Privly public key to the IdP and requests
-    a signed certificate.
+    the user's email address to the IdP and requests a signed
+    certificate.
 3.  If necessary, the user is asked to sign into the IdP before provisioning
     proceeds.
 4.  The IdP creates, signs, and returns the user certificate to the browser
@@ -93,48 +90,49 @@ generating an identity assertion and uploading it to the directory.
 ##Assertion Generation
 
 The user certificate establishes a verifiable link between an email address and
-the Privly public key. However, this is alone not enough to create a valid
+the Privly PGP public key. However, this is alone not enough to create a valid
 entry in the directory: the user still has to show their connection to the
 certificate by proving ownership of the private key.
 
 In order to prove ownership of a private key, the user's browser creates and
 signs a new document called an "identity assertion." It contains:
 
-*  The origin (scheme, domain, and port) of the directory that the user wants to
-   be entered into.
+*  The origin (scheme, domain, and port) of the directory that the user
+   wants to be entered into.
 *  An expiration time for the assertion, generally less than five minutes
-after it was created. (TODO: Discuss the expiration time)
+   after it was created. 
+*  The public key of the PGP keypair generated by the user's browser.
 
 The browser then presents both the user certificate and the identity assertion
-to the DP.  
+to the RP.
 
 ##Assertion Verification
 
-When a RP needs a Privly key for a particular email address, it queries the DP
-and receives all the currently non-expired assertions for the email.
-
-The combination of user certificate and identity assertion is sufficient to
-confirm a user's identity.
+The combination of user certificate and identity assertion, refered to
+as a backed assertion, is sufficient to confirm a user's identity.
 
 First, the RP checks the domain and expiration time in the assertion. If the
 assertion is expired or intended for a different domain, it's rejected. This
 prevents malicious re-use of assertions.
 
-Second, the RP validates the signature on the assertion with the Privly public
+Second, the RP validates the signature on the assertion with the Persona public
 key inside the user certificate. If the key and signature match, the RP is
 assured that the current user really does possess the key associated with the
 certificate.
 
-Last, the RP fetches the IdP's public key from its /.well-known/browserid
+Third, the RP fetches the IdP's public key from its /.well-known/browserid
 document and verifies that it matches the signature on the user certificate. If
 it does, then the RP can be certain that the certificate really was issued by
 the domain in question.
 
-Once verifying that this is a non-expired directory entry for the proper
-directory, that the user certificate matches the intended user, and that the
-user certificate is legitimate, the RP is done and can permit the use of the
-Privly public key as one that is authentically tied to the email address
-queried.
+Last, the Privly PGP public key is extracted from the identity
+assertion, and sent to the DP along with the user certificate and
+signature of the PGP public key by the user's Persona private key.
+
+Once these steps are complete the RP is done and permits the user to log
+in. Any error generated by uploading to the DP is returned to the RP.
+The RP may decide what to do with the error, and MUST allow the user to
+continue signing in.
 
 #The Persona Fallback IdP
 
@@ -152,9 +150,7 @@ certificate.
 
 # Use case overview
 ## Use case 1: 
-User uploading an e-mail/Privly public key to the directory after generating a
-new keypair.  In this use case the browser extension is function as the "user"
-actor.
+User uploads an Privly public key to the directory provider. 
 
 This use case involves the following steps:
 
@@ -162,32 +158,37 @@ This use case involves the following steps:
 1.    Send the certificate to the IdP.
 1.    IdP creates an identity assertion.
 1.    Returns the identity assertion to the user.
-1.    User uploads the identity assertion and user certificate to the DP.
+1.    User uploads the identity assertion and PGP public key to the DP.
 
 ## Use case 2: 
-User wants to find the Privly public key of a given e-mail address.  In this
-use case, the browser extension is functioning as the "RP" actor.
+User wants to find the Privly PGP public key associated with an identity
+(email address).
 
-1.    User queries the DP for a specific e-mail address.
-1.    Directory provider returns the user certificate and identity assertion.
-1.    The browser extension verifies the assertion.
-
+1.    User send the DP a specific e-mail address.
+1.    Directory provider returns the Privly PGP public key, signed PGP
+      public key by user's Privly private key, and the user certificate.
+1.    The browser extension sends the user certificate to the verifier.
+1.    The verifier evaluates the assertion and responds to the client.
+1.    The Privly PGP public key is valid and can now be used.
 
 ### Caveat
-Because we are unaware of any verifier libraries that can run in the context of
-a browser extension, initially we will not be doing verification from the
-browser extension. The first version of our implementation will make use of a
-remote verifier.  Eventually we would like to remove the remote verifier from
-the threat model so that we are not required to trust a remote resource.  Long
-term, this means developing a verifier that can run in the context of a browser
-extension.
-
-The initial implementation of use case 2 will look more like:
-
-1.    User queries the DP for a specific e-mail address.
-1.    Directory provider returns the user certificate and identity assertion.
-1.    The browser extension sends the assertion to the remote verifier over ssl/tls.
-1.    The remote verifier evaluates the assertion and responds to the client.
+Because we are unaware of any verifier libraries that can run in the
+local context of a browser extension, initially we will not be doing
+verification from the browser extension. The first version of our
+implementation will make use of a remote verifier.  Eventually we would
+like to remove the threat model of trusting a remote verifier resource.
 
 
+# Expected JSON Request to DP
+
+The DP expects a object containing two things.
+  1) An object containing:
+    - The Privly PGP Public Key
+    - A signed copy of the Privly PGP public key by the Persona private key
+  2) User Certificate
+
+These two objects verify that a user's identity:
+    - Is associated with the given Privly PGP public key
+    - Is a valid email address owned by the user and provided by the
+      IdP.
 
