@@ -246,13 +246,11 @@ like to remove the threat model of trusting a remote verifier resource.
 # Expected JSON Request to DP
 
 The DP expects a object containing two things.
-1. An object containing:
-    - The Privly PGP Public Key
-    - A signed copy of the Privly PGP public key by the Persona private key
-1. User Certificate
+
+  1.   Backed Identity Assertion 
+  1.   Privly Assertion
 
 These two objects verify that a user's identity:
     - Is associated with the given Privly PGP public key
     - Is a valid email address owned by the user and provided by the
       IdP.
-
