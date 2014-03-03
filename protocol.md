@@ -18,7 +18,7 @@ https://developer.mozilla.org/en-US/Persona/Protocol_Overview
 
 # Actors
 
-The protocol involves six actors:
+The protocol involves five actors:
 
 *  Uploading Users (UUs): People that want to upload their PGP public key and
            associated identity to a public directory.
@@ -44,7 +44,8 @@ IdPs, remote verifiers, and relying parties.
 
 There are two activities performed on top of the Persona protocol:
 
-*Logging in*
+###Logging in
+
 Logging in consists of five distinct steps. We add uploading to the
 original protocol. This is performed without modifications beyond the
 browser extension.
@@ -55,9 +56,10 @@ browser extension.
 1.  Uploading to DP (not a part of standard persona protocol)
 1.  Assertion Verification
 
-*Adding Keys to local key manager* (not a part of standard persona protocol)
-This process is for importing trusted keys into a keystore defined inside a
-browser extension.
+###Adding Keys to local key manager
+
+(not a part of standard persona protocol) This process is for importing trusted
+keys into a keystore defined inside a browser extension.
 
 1.  RU queries DP for public key
 1.  RU queries RV for validity of key returned from DP
@@ -119,8 +121,11 @@ signs a new document called a "persona identity assertion." It contains:
 *  An expiration time for the assertion, generally less than five minutes
   after it was created.
 
-The browser then presents both the user certificate and the identity assertion
-to the DP for verification.
+The browser then presents both the User Certificate and the Identity Assertion
+to the DP for verification.  Note that the DP performs a verification only for
+the purposes of ensuring that it is not storing junk data. After the RU
+downloads a Backed Identity Assertion from the DP, it performs a verification
+before trusting the assertion.
 
 ##Privly Assertion Generation
 
@@ -141,13 +146,17 @@ Identity assertion format. It contains:
 
 
 ##Uploading to DP
+
 The browser then presents the user certificate and both identity assertions
-to the DP. (TODO: Add some details)
+to the DP. The DP goes over a basic check of the data uploaded to it.  The
+checks first ensures it is in the expected format.  Then a remote verifier is
+called to make sure the data it stores was valid at the time of entry.  Upon
+retrieval of data from the DP, the RU verfies the data again.
 
 ##Persona Assertion Verification
 
-The combination of user certificate and identity assertion, refered to
-as a backed assertion, is sufficient to confirm a user's identity.
+The combination of User Certificate and Identity Assertion, refered to
+as a Backed Identity Assertion, is sufficient to confirm a user's identity.
 
 First, the DP checks the domain and expiration time in the assertion. If the
 assertion is expired or intended for a different domain, it's rejected. This
@@ -214,26 +223,28 @@ certificate.
 
 # Use case overview
 ## Use case 1: 
-User uploads an Privly public key to the directory provider. 
+User uploads a Privly public key to the directory provider. 
 
 This use case involves the following steps:
 
-1.    Generation of the user certificate from the browser extension.
+1.    Generation of the User Certificate from the browser extension.
 1.    Send the certificate to the IdP.
-1.    IdP creates an identity assertion.
-1.    Returns the identity assertion to the user.
-1.    User uploads the identity assertion and PGP public key to the DP.
+1.    IdP creates an Identity Assertion.
+1.    Returns the Identity Assertion to the user.
+1.    User uploads the Backed Identity Assertion and PGP public key to the DP.
 
 ## Use case 2: 
 User wants to find the Privly PGP public key associated with an identity
 (email address).
 
-1.    User send the DP a specific e-mail address.
-1.    Directory provider returns the Privly PGP public key, signed PGP
-      public key by user's Privly private key, and the user certificate.
-1.    The browser extension sends the user certificate to the verifier.
+1.    User send the DP a specific e-mail address or public key.
+1.    Directory provider returns the Backed Identity Assertion along
+      with the Privly public key.
+1.    The browser extension checks that the Persona public key signed
+      the Privly Assertion.
+1.    The browser extension sends the Identity Assertion to the verifier.
 1.    The verifier evaluates the assertion and responds to the client.
-1.    The Privly PGP public key is valid and can now be used.
+1.    The Privly public key is valid and can now be used.
 
 ### Caveat
 Because we are unaware of any verifier libraries that can run in the
@@ -241,7 +252,6 @@ local context of a browser extension, initially we will not be doing
 verification from the browser extension. The first version of our
 implementation will make use of a remote verifier.  Eventually we would
 like to remove the threat model of trusting a remote verifier resource.
-
 
 ## Expected JSON Request to DP
 
