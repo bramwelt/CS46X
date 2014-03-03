@@ -243,7 +243,7 @@ implementation will make use of a remote verifier.  Eventually we would
 like to remove the threat model of trusting a remote verifier resource.
 
 
-# Expected JSON Request to DP
+## Expected JSON Request to DP
 
 The DP expects a object containing two things.
 
@@ -251,6 +251,6 @@ The DP expects a object containing two things.
   1.   Privly Assertion
 
 These two objects verify that a user's identity:
-    - Is associated with the given Privly PGP public key
-    - Is a valid email address owned by the user and provided by the
-      IdP.
+
+*  Is associated with the given Privly PGP public key
+*  Is a valid email address owned by the user and provided by the IdP.
