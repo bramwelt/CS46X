@@ -24,8 +24,7 @@ The protocol involves five actors:
            associated identity to a public directory.
 *  Relying Users (RUs): People that want to discover a trusted public key.
 *  Directory Provider (DPs): A key-value store for holding associations between
-           identities and PGP public keys. This takes the place of RPs in the
-           standard persona protocol.
+           identities and PGP public keys. 
 *  Identity Providers (IdPs): Domains that can issue Persona-compatible 
            identity certificates to their users.
 *  Remote Verifier (RV): The service that verifies cryptographic assertions of
@@ -38,7 +37,7 @@ Mozilla operates a fallback IdP so that users can use any email address with
 Persona, even one with a specific domain that isn't an IdP itself.  
 
 This extension to Persona uses, unmodified, the existing infrastructure for
-IdPs, remote verifiers, and relying parties.
+IdPs and remote verifiers.
 
 #Protocol Steps
 
