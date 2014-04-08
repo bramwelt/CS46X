@@ -1,0 +1,12 @@
+Generate Assertions
+===================
+
+Use `generate-assertion` to create a BrowserId Backed Identity
+Assertion.
+
+A BIA is the concatonation of a Identity Certificate and a User
+Certificate seperated by a tilde ('~').
+
+```
+header.payload.signature~header.payload.signature
+```

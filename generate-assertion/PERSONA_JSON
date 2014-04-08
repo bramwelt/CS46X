@@ -1,0 +1,42 @@
+==================
+Identity Assertion
+==================
+
+Header:
+ {"alg": "DS128"}
+
+Contents:
+ {
+   "exp": 1384188844356,
+   "aud": "http://example.com"
+ }
+
+Signed By:
+ User
+
+================
+User Certificate
+================
+
+Header:
+ {"alg": "RS256"}
+
+Contents:
+ {
+   "iss": "example.com",
+   "iat": 1384188587000,
+   "exp": 1384210187000,
+   "principal": {
+     "email": "user@example.com"
+   },
+   "public-key": {
+     "algorithm": "DS",
+     "p": "ff6004...",
+     "q": "e21e04...",
+     "g": "c52a4a...",
+     "y": "5df124..."
+   }
+ }
+
+Signed By:
+ Audience/Issuer

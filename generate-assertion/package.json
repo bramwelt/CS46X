@@ -1,0 +1,22 @@
+{
+  "name": "generate-assertion",
+  "version": "0.1.0",
+  "description": "Generate BrowserId Backed Identity Assertions",
+  "dependencies": {
+    "jwcrypto": "0.5.0",
+    "browserify": "1.13.5",
+    "http-browserify": "0.1.1"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {
+    "bigint": "0.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/bramwelt/CS46X.git"
+  },
+  "main": "index.js",
+  "bin": {
+    "generate-assertion": "./bin/generate-assertion"
+  }
+}

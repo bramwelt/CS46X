@@ -1,0 +1,12 @@
+The user is 'logging in' to the directory provider
+
+The Identity Assertion lasts for 1
+month. This is the PGP key experation because that is how long the BIA
+will be valid for in the Directory Provider. We do not trust the DirP,
+so every item retrieved from it should be validated. This validation
+will fail by Persona because the certificate will have expired.
+
+We generate this BIA to simulate the user 'logging in' to the directory
+provider. This requires a pre-made User Certificate from the user's IdP,
+and the user's secret key to sign the BIA, and a PGP key that will be
+generate for the user.
